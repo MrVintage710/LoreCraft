@@ -1,0 +1,7 @@
+name: LoreCraft
+version: ${project.version}
+main: me.mrvintage.lorecraft.LoreCraft
+api-version: 1.13
+prefix: LC
+authors: [MrVintage, ObamaDramaLlama]
+description: A plugin that add more lore friendly ways for doing basic actions you would want in a server.
