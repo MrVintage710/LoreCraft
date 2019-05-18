@@ -1288,7 +1288,7 @@ public class GriefPrevention extends JavaPlugin
 					result = this.dataStore.createClaim(
 							block.getWorld(),
 							block.getX() - radius, block.getX() + radius,
-							block.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, block.getY(),
+							0, block.getY(),
 							block.getZ() - radius, block.getZ() + radius,
 							player.getUniqueId(),
 							null, null,
@@ -1335,7 +1335,7 @@ public class GriefPrevention extends JavaPlugin
 					result = this.dataStore.createClaim(
 							block.getWorld(),
 							block.getX() - radius, block.getX() + radius,
-							block.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, block.getY(),
+							0, block.getY(),
 							block.getZ() - radius, block.getZ() + radius,
 							player.getUniqueId(),
 							null, null,
