@@ -1106,7 +1106,7 @@ public abstract class DataStore
 			if(winner != null)
 			{
 				//notify the winner
-				GriefPrevention.sendMessage(winner, TextMode.Success, Messages.SiegeWinDoorsOpen);
+				//GriefPrevention.sendMessage(winner, TextMode.Success, Messages.SiegeWinDoorsOpen);
 				
 				//schedule a task to secure the claims in about 5 minutes
 				SecureClaimTask task = new SecureClaimTask(siegeData);
@@ -1288,14 +1288,14 @@ public abstract class DataStore
             {
                 if(newWidth < GriefPrevention.instance.config_claims_minWidth || newHeight < GriefPrevention.instance.config_claims_minWidth)
                 {
-                    GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeClaimTooNarrow, String.valueOf(GriefPrevention.instance.config_claims_minWidth));
+                    //GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeClaimTooNarrow, String.valueOf(GriefPrevention.instance.config_claims_minWidth));
                     return;
                 }
                 
                 int newArea = newWidth * newHeight;
                 if(newArea < GriefPrevention.instance.config_claims_minArea)
                 {
-                    GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeClaimInsufficientArea, String.valueOf(GriefPrevention.instance.config_claims_minArea));
+                   // GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeClaimInsufficientArea, String.valueOf(GriefPrevention.instance.config_claims_minArea));
                     return;
                 }
             }
@@ -1308,7 +1308,7 @@ public abstract class DataStore
                 
                 if(blocksRemainingAfter < 0)
                 {
-                    GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeNeedMoreBlocks, String.valueOf(Math.abs(blocksRemainingAfter)));
+                   // GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeNeedMoreBlocks, String.valueOf(Math.abs(blocksRemainingAfter)));
                     this.tryAdvertiseAdminAlternatives(player);
                     return;
                 }
@@ -1368,7 +1368,7 @@ public abstract class DataStore
             }
             
             //inform about success, visualize, communicate remaining blocks available
-            GriefPrevention.sendMessage(player, TextMode.Success, Messages.ClaimResizeSuccess, String.valueOf(claimBlocksRemaining));
+            //GriefPrevention.sendMessage(player, TextMode.Success, Messages.ClaimResizeSuccess, String.valueOf(claimBlocksRemaining));
             Visualization visualization = Visualization.FromClaim(result.claim, player.getEyeLocation().getBlockY(), VisualizationType.Claim, player.getLocation());
             Visualization.Apply(player, visualization);
             
@@ -1381,14 +1381,14 @@ public abstract class DataStore
             //if increased to a sufficiently large size and no subdivisions yet, send subdivision instructions
             if(oldClaim.getArea() < 1000 && result.claim.getArea() >= 1000 && result.claim.children.size() == 0 && !player.hasPermission("griefprevention.adminclaims"))
             {
-              GriefPrevention.sendMessage(player, TextMode.Info, Messages.BecomeMayor, 200L);
-              GriefPrevention.sendMessage(player, TextMode.Instr, Messages.SubdivisionVideo2, 201L, DataStore.SUBDIVISION_VIDEO_URL);
+             // GriefPrevention.sendMessage(player, TextMode.Info, Messages.BecomeMayor, 200L);
+              //GriefPrevention.sendMessage(player, TextMode.Instr, Messages.SubdivisionVideo2, 201L, DataStore.SUBDIVISION_VIDEO_URL);
             }
             
             //if in a creative mode world and shrinking an existing claim, restore any unclaimed area
             if(smaller && GriefPrevention.instance.creativeRulesApply(oldClaim.getLesserBoundaryCorner()))
             {
-                GriefPrevention.sendMessage(player, TextMode.Warn, Messages.UnclaimCleanupWarning);
+               // GriefPrevention.sendMessage(player, TextMode.Warn, Messages.UnclaimCleanupWarning);
                 GriefPrevention.instance.restoreClaim(oldClaim, 20L * 60 * 2);  //2 minutes
                 GriefPrevention.AddLogEntry(player.getName() + " shrank a claim @ " + GriefPrevention.getfriendlyLocationString(playerData.claimResizing.getLesserBoundaryCorner()));
             }
@@ -1402,7 +1402,7 @@ public abstract class DataStore
             if(result.claim != null)
             {
                 //inform player
-                GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeFailOverlap);
+               // GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeFailOverlap);
                 
                 //show the player the conflicting claim
                 Visualization visualization = Visualization.FromClaim(result.claim, player.getEyeLocation().getBlockY(), VisualizationType.ErrorClaim, player.getLocation());
@@ -1410,7 +1410,7 @@ public abstract class DataStore
             }
             else
             {
-                GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeFailOverlapRegion);
+               // GriefPrevention.sendMessage(player, TextMode.Err, Messages.ResizeFailOverlapRegion);
             }
         }
     }
@@ -1420,15 +1420,15 @@ public abstract class DataStore
     {
         if(player.hasPermission("griefprevention.adminclaims") && player.hasPermission("griefprevention.adjustclaimblocks"))
         {
-            GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseACandACB);
+            //GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseACandACB);
         }
         else if(player.hasPermission("griefprevention.adminclaims"))
         {
-            GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseAdminClaims);
+           // GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseAdminClaims);
         }
         else if(player.hasPermission("griefprevention.adjustclaimblocks"))
         {
-            GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseACB);
+           // GriefPrevention.sendMessage(player, TextMode.Info, Messages.AdvertiseACB);
         }
     }
 	

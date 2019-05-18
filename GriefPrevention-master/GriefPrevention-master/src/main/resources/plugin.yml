@@ -8,8 +8,23 @@ api-version: 1.13
 commands:
     claimland:
       description: Claims a chunk
-      usage: /claimland
+      usage:
       aliases: cl
+      permission: griefprevention.claims
+    getPip:
+      description: gives an admin a gold pip
+      usage:
+      aliases: getpip
+      permission: griefprevention.adminclaims
+    claimMassive:
+      description: Claims a chunk
+      usage:
+      aliases: cm
+      permission: griefprevention.claims
+    showborder:
+      description: shows borders
+      usage:
+      aliases: sb
       permission: griefprevention.claims
     abandonclaim:
       description: Deletes a claim.

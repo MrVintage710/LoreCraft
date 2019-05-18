@@ -31,13 +31,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import me.ryanhamshire.GriefPrevention.events.VisualizationEvent;
 import me.ryanhamshire.GriefPrevention.DataStore.NoTransferException;
 import me.ryanhamshire.GriefPrevention.events.PreventBlockBreakEvent;
 import me.ryanhamshire.GriefPrevention.events.SaveTrappedPlayerEvent;
 import me.ryanhamshire.GriefPrevention.metrics.MetricsHandler;
 import net.milkbowl.vault.economy.Economy;
-
+import java.util.Collections;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,6 +61,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -1266,31 +1267,174 @@ public class GriefPrevention extends JavaPlugin
 		//claimland
 		if(cmd.getName().equalsIgnoreCase("claimland") && player != null)
 		{
-			player.sendMessage("" + GriefPrevention.instance.config_claims_automaticClaimsForNewPlayersRadius);
-			Block block = player.getLocation().getBlock();
-			int radius = GriefPrevention.instance.config_claims_automaticClaimsForNewPlayersRadius;
-			CreateClaimResult result = null;
-			while(radius >= 0)
-			{
-				result = this.dataStore.createClaim(
-						block.getWorld(),
-						block.getX() - radius, block.getX() + radius,
-						block.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, block.getY(),
-						block.getZ() - radius, block.getZ() + radius,
-						player.getUniqueId(),
-						null, null,
-						player);
+			ItemStack goldPip = new ItemStack(Material.GOLD_NUGGET, 1);
+			ItemMeta newitemMeta = goldPip.getItemMeta();
+			newitemMeta.setDisplayName("gold pip");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add("Currency used by the Empire.");
+			newitemMeta.setLore(lore);
+			//newitemMeta.setCustomModelData();
+			goldPip.setItemMeta(newitemMeta);
+			player.sendMessage(goldPip.getItemMeta().getDisplayName());
+			//player.getInventory().addItem(goldPip);
 
-				if(result.succeeded) break;
+			if(player.getInventory().containsAtLeast(goldPip, 1450)) {
+				//player.sendMessage("" + GriefPrevention.instance.config_claims_automaticClaimsForNewPlayersRadius);
+				Block block = player.getLocation().getBlock();
+				int radius = GriefPrevention.instance.config_claims_automaticClaimsForNewPlayersRadius;
+				CreateClaimResult result = null;
+				while (radius >= 0) {
+					result = this.dataStore.createClaim(
+							block.getWorld(),
+							block.getX() - radius, block.getX() + radius,
+							block.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, block.getY(),
+							block.getZ() - radius, block.getZ() + radius,
+							player.getUniqueId(),
+							null, null,
+							player);
 
-				radius--;
+					if (result.succeeded) break;
+
+					radius--;
+				}
+
+				if (result != null && result.succeeded) {
+					//show the player the protected area
+					for(int i = 0; i < 1450; i++) {
+						player.getInventory().removeItem(goldPip);
+					}
+					Visualization visualization = Visualization.FromClaim(result.claim, block.getY(), VisualizationType.Claim, player.getLocation());
+					Visualization.Apply(player, visualization);
+				} else {
+					PlayerData playerData = this.dataStore.getPlayerData(player.getUniqueId());
+					Claim claim = this.dataStore.getClaimAt(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation(), false /*ignore height*/, playerData.lastClaim);
+
+					playerData.lastClaim = claim;
+
+					//visualize boundary
+					Visualization visualization = Visualization.FromClaim(claim, player.getEyeLocation().getBlockY(), VisualizationType.ErrorClaim, player.getLocation());
+
+					// alert plugins of a visualization
+					Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, claim));
+
+					Visualization.Apply(player, visualization);
+				}
 			}
+		}
 
-			if(result != null && result.succeeded)
+		//claimMassive
+		if(cmd.getName().equalsIgnoreCase("claimMassive") && player != null)
+		{
+			ItemStack goldPip = new ItemStack(Material.GOLD_NUGGET, 1);
+			ItemMeta newitemMeta = goldPip.getItemMeta();
+			newitemMeta.setDisplayName("gold pip");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add("Currency used by the Empire.");
+			newitemMeta.setLore(lore);
+			//newitemMeta.setCustomModelData();
+			goldPip.setItemMeta(newitemMeta);
+			player.sendMessage(goldPip.getItemMeta().getDisplayName());
+			//player.getInventory().addItem(goldPip);
+
+			if(player.getInventory().containsAtLeast(goldPip, 14500)){
+				Block block = player.getLocation().getBlock();
+				int radius = 49;
+				CreateClaimResult result = null;
+				while(radius >= 0)
+				{
+					result = this.dataStore.createClaim(
+							block.getWorld(),
+							block.getX() - radius, block.getX() + radius,
+							block.getY() - GriefPrevention.instance.config_claims_claimsExtendIntoGroundDistance, block.getY(),
+							block.getZ() - radius, block.getZ() + radius,
+							player.getUniqueId(),
+							null, null,
+							player);
+
+					if(result.succeeded) break;
+
+					radius--;
+				}
+
+				if(result != null && result.succeeded)
+				{
+					for(int i = 0; i < 14500; i++) {
+						player.getInventory().removeItem(goldPip);
+					}
+					//show the player the protected area
+					Visualization visualization = Visualization.FromClaim(result.claim, block.getY(), VisualizationType.Claim, player.getLocation());
+					Visualization.Apply(player, visualization);
+				}else{
+					PlayerData playerData = this.dataStore.getPlayerData(player.getUniqueId());
+					Claim claim = this.dataStore.getClaimAt(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation(), false /*ignore height*/, playerData.lastClaim);
+
+					playerData.lastClaim = claim;
+
+					//visualize boundary
+					Visualization visualization = Visualization.FromClaim(claim, player.getEyeLocation().getBlockY(), VisualizationType.ErrorClaim, player.getLocation());
+
+					// alert plugins of a visualization
+					Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, claim));
+
+					Visualization.Apply(player, visualization);
+				}
+			}
+		}
+
+		//getPip
+		if(cmd.getName().equalsIgnoreCase("getPip") && player != null)
+		{
+			ItemStack goldPip = new ItemStack(Material.GOLD_NUGGET, 1);
+			ItemMeta newitemMeta = goldPip.getItemMeta();
+			newitemMeta.setDisplayName("gold pip");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add("Currency used by the Empire.");
+			newitemMeta.setLore(lore);
+			//newitemMeta.setCustomModelData();
+			goldPip.setItemMeta(newitemMeta);
+			player.getInventory().addItem(goldPip);
+		}
+
+		//showborder
+		if(cmd.getName().equalsIgnoreCase("showborder") && player != null)
+		{
+			Block clickedBlock = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+			PlayerData playerData = this.dataStore.getPlayerData(player.getUniqueId());
+
+			//if no block, stop here
+			if(clickedBlock == null)
 			{
-				//show the player the protected area
-				Visualization visualization = Visualization.FromClaim(result.claim, block.getY(), VisualizationType.Claim, player.getLocation());
-				Visualization.Apply(player, visualization);
+				//player.sendMessage("TEST2");
+			}else{
+				////player.sendMessage("TEST4");
+				if(playerData == null) playerData = this.dataStore.getPlayerData(player.getUniqueId());
+				Claim claim = this.dataStore.getClaimAt(clickedBlock.getLocation(), false /*ignore height*/, playerData.lastClaim);
+
+				//no claim case
+				if(claim == null)
+				{
+					//player.sendMessage("TEST5");
+
+					// alert plugins of a visualization
+					Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, Collections.<Claim>emptySet()));
+
+					Visualization.Revert(player);
+				}
+
+				//claim case
+				else
+				{
+					//player.sendMessage("TEST6");
+					playerData.lastClaim = claim;
+
+					//visualize boundary
+					Visualization visualization = Visualization.FromClaim(claim, player.getEyeLocation().getBlockY(), VisualizationType.Claim, player.getLocation());
+
+					// alert plugins of a visualization
+					Bukkit.getPluginManager().callEvent(new VisualizationEvent(player, claim));
+
+					Visualization.Apply(player, visualization);
+				}
 			}
 		}
 		
@@ -1505,7 +1649,7 @@ public class GriefPrevention extends JavaPlugin
 					permissions.append(this.trustEntryToPlayerName(managers.get(i)) + " ");
 			}
 			
-			player.sendMessage(permissions.toString());
+			//player.sendMessage(permissions.toString());
 			permissions = new StringBuilder();
 			permissions.append(ChatColor.YELLOW + ">");
 			
@@ -1515,7 +1659,7 @@ public class GriefPrevention extends JavaPlugin
 					permissions.append(this.trustEntryToPlayerName(builders.get(i)) + " ");		
 			}
 			
-			player.sendMessage(permissions.toString());
+			//player.sendMessage(permissions.toString());
 			permissions = new StringBuilder();
 			permissions.append(ChatColor.GREEN + ">");				
 			
@@ -1525,7 +1669,7 @@ public class GriefPrevention extends JavaPlugin
 					permissions.append(this.trustEntryToPlayerName(containers.get(i)) + " ");		
 			}
 			
-			player.sendMessage(permissions.toString());
+			//player.sendMessage(permissions.toString());
 			permissions = new StringBuilder();
 			permissions.append(ChatColor.BLUE + ">");
 				
@@ -1535,13 +1679,13 @@ public class GriefPrevention extends JavaPlugin
 					permissions.append(this.trustEntryToPlayerName(accessors.get(i)) + " ");			
 			}
 			
-			player.sendMessage(permissions.toString());
+			//player.sendMessage(permissions.toString());
 			
-			player.sendMessage(
-		        ChatColor.GOLD + this.dataStore.getMessage(Messages.Manage) + " " + 
-		        ChatColor.YELLOW + this.dataStore.getMessage(Messages.Build) + " " + 
-		        ChatColor.GREEN + this.dataStore.getMessage(Messages.Containers) + " " + 
-		        ChatColor.BLUE + this.dataStore.getMessage(Messages.Access));
+			//player.sendMessage(
+		     //   ChatColor.GOLD + this.dataStore.getMessage(Messages.Manage) + " " +
+		     //   ChatColor.YELLOW + this.dataStore.getMessage(Messages.Build) + " " +
+		    //    ChatColor.GREEN + this.dataStore.getMessage(Messages.Containers) + " " +
+		     //   ChatColor.BLUE + this.dataStore.getMessage(Messages.Access));
 			
 			if(claim.getSubclaimRestrictions())
 			{
@@ -2680,10 +2824,10 @@ public class GriefPrevention extends JavaPlugin
 		else if(cmd.getName().equalsIgnoreCase("gpblockinfo") && player != null)
 		{
 		    ItemStack inHand = player.getItemInHand();
-		    player.sendMessage("In Hand: " + String.format("%s(dValue:%s)", inHand.getType().name(), inHand.getData().getData()));
+		   // player.sendMessage("In Hand: " + String.format("%s(dValue:%s)", inHand.getType().name(), inHand.getData().getData()));
 		    
 		    Block inWorld = GriefPrevention.getTargetNonAirBlock(player, 300);
-		    player.sendMessage("In World: " + String.format("%s(dValue:%s)", inWorld.getType().name(), inWorld.getData()));
+		    //player.sendMessage("In World: " + String.format("%s(dValue:%s)", inWorld.getType().name(), inWorld.getData()));
 		    
 		    return true;
 		}
@@ -3353,7 +3497,7 @@ public class GriefPrevention extends JavaPlugin
 		}
 		else
 		{
-			player.sendMessage(color + message);
+			//player.sendMessage(color + message);
 		}
 	}
 	
