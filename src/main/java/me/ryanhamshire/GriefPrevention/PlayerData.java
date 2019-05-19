@@ -38,6 +38,8 @@ import org.bukkit.entity.Player;
 //holds all of GriefPrevention's player-tied data
 public class PlayerData 
 {
+    //The owner of the region the player is in.
+    public String OwnerName = "wilderness";
 	//the player's ID
 	public UUID playerID;
 	
