@@ -441,6 +441,7 @@ public class DatabaseDataStore extends DataStore
 		String managersString = this.storageStringBuilder(managers);
 		boolean inheritNothing = claim.getSubclaimRestrictions();
 		long parentId = claim.parent == null ? -1 : claim.parent.id;
+		String claimName = claim.getName();
 
 		try (PreparedStatement insertStmt = this.databaseConnection.prepareStatement(this.getInsertClaimSQL())) {
 

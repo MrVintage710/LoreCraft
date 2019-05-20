@@ -16,6 +16,11 @@ commands:
       usage:
       aliases: getpip
       permission: griefprevention.adminclaims
+    nameClaim:
+      description: changes the name of a claim
+      usage:
+      aliases: nameClaim
+      permission: griefprevention.claims
     claimMassive:
       description: Claims a chunk
       usage:

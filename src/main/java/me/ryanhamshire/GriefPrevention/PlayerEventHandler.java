@@ -1377,8 +1377,6 @@ class PlayerEventHandler implements Listener
 		}
 	}
 
-	//String OwnerName = "wilderness";
-	//when a player switches in-hand items
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
@@ -1392,7 +1390,11 @@ class PlayerEventHandler implements Listener
 			player.sendTitle("Wilderness", "", 40, 40, 40);
 		}else if(!OwnerName.equals(claim.getOwnerName())) {
 			playerData.OwnerName = claim.getOwnerName();
-			player.sendTitle(claim.getOwnerName() + "'s plot", "", 40, 40, 40);
+			if(claim.getName() == null){
+				player.sendTitle(claim.getOwnerName() + "'s plot", "", 40, 40, 40);
+			}else{
+				player.sendTitle(claim.getName(), "", 40, 40, 40);
+			}
 		}
 
 	}

@@ -46,6 +46,7 @@ public class Claim
 	//ownerID.  for admin claims, this is NULL
 	//use getOwnerName() to get a friendly name (will be "an administrator" for admin claims)
 	public UUID ownerID;
+	public String claimName;
 	
 	//list of players who (beyond the claim owner) have permission to grant permissions in this claim
 	public ArrayList<String> managers = new ArrayList<String>();
@@ -204,7 +205,7 @@ public class Claim
 		
 		//owner
 		this.ownerID = ownerID;
-		
+
 		//other permissions
 		for(String builderID : builderIDs)
 		{
@@ -606,6 +607,16 @@ public class Claim
 	public void setPermission(String playerID, ClaimPermission permissionLevel)
 	{
 		this.playerIDToClaimPermissionMap.put(playerID.toLowerCase(),  permissionLevel);
+	}
+
+	public String getName()
+	{
+    	return claimName;
+	}
+
+	public void setName(String newName)
+	{
+		claimName = newName;
 	}
 	
 	//revokes a permission for a player or the public

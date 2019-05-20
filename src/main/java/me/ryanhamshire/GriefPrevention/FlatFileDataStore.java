@@ -330,11 +330,16 @@ public class FlatFileDataStore extends DataStore
                         if(line == null) line = "";
                         List<String> managerNames = Arrays.asList(line.split(";"));
                         managerNames = this.convertNameListToUUIDList(managerNames);
-                        
-                        //skip any remaining extra lines, until the "===" string, indicating the end of this claim or subdivision
+
+                        //skipping 8th and 9th line because we aren't subdividing plots
+                        inStream.readLine();
+                        inStream.readLine();
+                        String claimName = inStream.readLine();
+                        /*skip any remaining extra lines, until the "===" string, indicating the end of this claim or subdivision
                         line = inStream.readLine();
-                        while(line != null && !line.contains("==="))
+                        while(line != null && !line.contains("===")) {
                             line = inStream.readLine();
+                        }*/
                         
                         //build a claim instance from those data
                         //if this is the first claim loaded from this file, it's the top level claim
@@ -342,7 +347,7 @@ public class FlatFileDataStore extends DataStore
                         {
                             //instantiate
                             topLevelClaim = new Claim(lesserBoundaryCorner, greaterBoundaryCorner, ownerID, builderNames, containerNames, accessorNames, managerNames, claimID);
-                            
+                            topLevelClaim.claimName = claimName;
                             topLevelClaim.modifiedDate = new Date(files[i].lastModified());
                             this.addClaim(topLevelClaim, false);
                         }
@@ -520,9 +525,12 @@ public class FlatFileDataStore extends DataStore
         boolean inheritNothing = yaml.getBoolean("inheritNothing");
 
         out_parentID.add(yaml.getLong("Parent Claim ID", -1L));
-        
+
+        String claimName = yaml.getString("claimName");
+
         //instantiate
         claim = new Claim(lesserBoundaryCorner, greaterBoundaryCorner, ownerID, builders, containers, accessors, managers, inheritNothing, claimID);
+        claim.claimName = claimName;
         claim.modifiedDate = new Date(lastModifiedDate);
         claim.id = claimID;
         
@@ -562,6 +570,7 @@ public class FlatFileDataStore extends DataStore
         yaml.set("Parent Claim ID", parentID);
         
         yaml.set("inheritNothing", claim.getSubclaimRestrictions());
+        yaml.set("claimName", claim.getName());
 
         return yaml.saveToString();
 	}

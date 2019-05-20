@@ -1377,6 +1377,24 @@ public class GriefPrevention extends JavaPlugin
 			player.getInventory().addItem(goldPip);
 		}
 
+		//nameClaim
+		if(cmd.getName().equalsIgnoreCase("nameClaim") && player != null)
+		{
+			PlayerData playerData = this.dataStore.getPlayerData(player.getUniqueId());
+			Claim claim = this.dataStore.getClaimAt(player.getLocation().getBlock().getRelative(BlockFace.DOWN).getLocation(), false, playerData.lastClaim);
+			String buildString = null;
+			for (int i=0; i<args.length; i++)
+			{
+				if(i == 0){
+					buildString = args[i];
+				}else {
+					buildString = buildString + " " + args[i];
+				}
+			}
+			claim.setName(buildString);
+			this.dataStore.saveClaim(claim);
+		}
+
 		//showborder
 		if(cmd.getName().equalsIgnoreCase("showborder") && player != null)
 		{
